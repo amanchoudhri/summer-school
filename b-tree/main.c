@@ -245,6 +245,24 @@ struct Node* insert(struct Node *root, long long key, long long row_id){
     }
 };
 
+long long find(struct Node *root, long long key){
+    /*
+     * Given a primary key, return the corresponding row_id (-1 if key not found).
+     */
+    if (root->is_leaf) {
+        for (int i = 0; i < root->n_keys; i++){
+            if (key == root->keys[i]) return root->row_ids[i];
+        }
+        return -1;
+    }
+
+    int i;
+    for (i = 0; i < root->n_keys; i++){
+        if (key < root->keys[i]) break;
+    }
+    return find(root->children[i], key);
+}
+
 int main() {
     struct Node *root = make_node(true);
 
@@ -315,6 +333,9 @@ int main() {
     print_tree(root, "root", 0);
 
     check_leaf_links(root);
+
+    printf("find(9): %lld. expected: 17\n", find(root, 9));
+    printf("find(770): %lld. expected: -1\n", find(root, 770));
 
     free_tree(root);
 
